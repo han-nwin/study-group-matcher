@@ -4,13 +4,24 @@ $username = "root";
 $password = ""; // Change if necessary
 $dbname = "testdb";
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Connect to MySQL (without specifying a database)
+$conn = new mysqli($servername, $username, $password);
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
+// Create the database if it doesn't exist
+$sql = "CREATE DATABASE IF NOT EXISTS $dbname";
+if ($conn->query($sql) === TRUE) {
+    echo "<p style='color: green;'>Database '$dbname' is ready!</p>";
+} else {
+    echo "<p style='color: red;'>Error creating database: " . $conn->error . "</p>";
+}
+
+// Now connect to the newly created database
+$conn->select_db($dbname);
 
 // Handle Button Actions
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -26,8 +37,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<p style='color: red;'>Error creating table: " . $conn->error . "</p>";
         }
     } elseif (isset($_POST["insert_user"])) {
-        $name = "John Doe";
-        $email = "john.doe@example.com";
+        $name = "Han Nguyen";
+        $email = "han.nwin@example.com";
         $sql = "INSERT INTO users (name, email) VALUES ('$name', '$email')";
         if ($conn->query($sql) === TRUE) {
             echo "<p style='color: green;'>New user added!</p>";
@@ -47,8 +58,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<p style='color: red;'>No users found.</p>";
         }
     } elseif (isset($_POST["update_user"])) {
-        $newName = "John Smith";
-        $sql = "UPDATE users SET name='$newName' WHERE email='john.doe@example.com'";
+        $newName = "NAH NEYUGN";
+        $sql = "UPDATE users SET name='$newName' WHERE email='han.nwin@example.com'";
         if ($conn->query($sql) === TRUE) {
             echo "<p style='color: green;'>User updated successfully!</p>";
         } else {
@@ -72,9 +83,41 @@ $conn->close();
 <html>
 <head>
     <title>PHP MySQL Demo</title>
+    <style>
+        /* General Button Styles */
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Make "Create Table" Button Stand Out */
+        button[name="create_table"] {
+            background-color: #ff5733; /* Bright red-orange */
+            color: white;
+            font-weight: bold;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Other Buttons */
+        button:not([name="create_table"]) {
+            background-color: #007bff; /* Standard blue */
+            color: white;
+        }
+
+        /* Hover Effect */
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
     <h2>PHP MySQL CRUD Demo</h2>
+    <p style="color: red; font-weight: bold;">⚠ Click "Create Table" first before using other buttons!</p>
+
     <form method="post">
         <button type="submit" name="create_table">Create Table</button>
         <button type="submit" name="insert_user">Insert User</button>
