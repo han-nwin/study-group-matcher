@@ -66,7 +66,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "<p style='color: red;'>Error updating user: " . $conn->error . "</p>";
         }
     } elseif (isset($_POST["delete_user"])) {
-        $sql = "DELETE FROM users WHERE email='john.doe@example.com'";
+        $sql = "DELETE FROM users WHERE email='han.nwin@example.com'";
         if ($conn->query($sql) === TRUE) {
             echo "<p style='color: green;'>User deleted successfully!</p>";
         } else {
@@ -83,6 +83,19 @@ $conn->close();
 <html>
 <head>
     <title>PHP MySQL Demo</title>
+</head>
+<body>
+    <h2>PHP MySQL CRUD Demo</h2>
+    <p style="color: red; font-weight: bold;">⚠ Click "Create Table" first before using other buttons!</p>
+
+    <form method="post">
+        <button type="submit" name="create_table">Create Table</button>
+        <button type="submit" name="insert_user">Insert User</button>
+        <button type="submit" name="retrieve_users">Retrieve Users</button>
+        <button type="submit" name="update_user">Update User</button>
+        <button type="submit" name="delete_user">Delete User</button>
+    </form>
+</body>
     <style>
         /* General Button Styles */
         button {
@@ -102,6 +115,12 @@ $conn->close();
             box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
         }
 
+        /* Make "Create Table" Button Change Color After Clicked */
+        .clicked {
+            background-color: #28a745; /* Green */
+            color: white;
+        }
+
         /* Other Buttons */
         button:not([name="create_table"]) {
             background-color: #007bff; /* Standard blue */
@@ -113,17 +132,4 @@ $conn->close();
             opacity: 0.8;
         }
     </style>
-</head>
-<body>
-    <h2>PHP MySQL CRUD Demo</h2>
-    <p style="color: red; font-weight: bold;">⚠ Click "Create Table" first before using other buttons!</p>
-
-    <form method="post">
-        <button type="submit" name="create_table">Create Table</button>
-        <button type="submit" name="insert_user">Insert User</button>
-        <button type="submit" name="retrieve_users">Retrieve Users</button>
-        <button type="submit" name="update_user">Update User</button>
-        <button type="submit" name="delete_user">Delete User</button>
-    </form>
-</body>
 </html>
