@@ -3,6 +3,7 @@ $servername = "localhost";
 $username = "root";
 $password = ""; // Change if necessary
 $dbname = "testdb";
+$tablename = "users";
 
 // Connect to MySQL (without specifying a database)
 $conn = new mysqli($servername, $username, $password);
@@ -23,39 +24,41 @@ if ($conn->query($sql) === true) {
 // Now connect to the newly created database
 $conn->select_db($dbname);
 
-// Handle Button Actions
-// 1. Create a table
-// Check if the "users" table exists
+// Check if the table exists
 $tableExists = false;
-$checkTable = $conn->query("SHOW TABLES LIKE 'users'");
+$checkTable = $conn->query("SHOW TABLES LIKE '$tablename'");
 if ($checkTable->num_rows > 0) {
     $tableExists = true;
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (isset($_POST["create_table"])) {
-        $sql = "CREATE TABLE IF NOT EXISTS users (
+        $sql = "CREATE TABLE IF NOT EXISTS $tablename (
             id INT AUTO_INCREMENT PRIMARY KEY,
             name VARCHAR(50) NOT NULL,
             email VARCHAR(100) NOT NULL UNIQUE
         )";
         if ($conn->query($sql) === true) {
-            echo "<p style='color: green;'>Table 'users' is ready!</p>";
+            echo "<p style='color: green;'>Table '$tablename' is ready!</p>";
             $tableExists = true;
         } else {
             echo "<p style='color: red;'>Error creating table: " . $conn->error . "</p>";
         }
-    } elseif (isset($_POST["insert_user"])) { // 2. Insert user
-        $name = "Han Nguyen";
-        $email = "han.nwin@example.com";
-        $sql = "INSERT INTO users (name, email) VALUES ('$name', '$email')";
-        if ($conn->query($sql) === true) {
-            echo "<p style='color: green;'>New user added!</p>";
+    } elseif (isset($_POST["insert_user"])) {
+        $name = $_POST["name"];
+        $email = $_POST["email"];
+        
+        // Use prepared statement
+        $stmt = $conn->prepare("INSERT INTO $tablename (name, email) VALUES (?, ?)");
+        $stmt->bind_param("ss", $name, $email);
+        if ($stmt->execute()) {
+            echo "<p style='color: green;'>New user added: $name ($email)</p>";
         } else {
-            echo "<p style='color: red;'>Error: " . $conn->error . "</p>";
+            echo "<p style='color: red;'>Error: " . $stmt->error . "</p>";
         }
-    } elseif (isset($_POST["retrieve_users"])) { // 3. Create user
-        $sql = "SELECT * FROM users";
+        $stmt->close();
+    } elseif (isset($_POST["retrieve_users"])) {
+        $sql = "SELECT * FROM $tablename";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
             echo "<h3>User List:</h3><ul>";
@@ -66,29 +69,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             echo "<p style='color: red;'>No users found.</p>";
         }
-    } elseif (isset($_POST["update_user"])) { // 4. Update user
-        $newName = "NAH NEYUGN";
-        $sql = "UPDATE users SET name='$newName' WHERE email='han.nwin@example.com'";
-        if ($conn->query($sql) === true) {
-            if ($conn->affected_rows > 0) {
-                echo "<p style='color: green;'>User updated successfully!</p>"; //
-            } else {
-                echo "<p style='color: red;'>No user found with that email. Update failed.</p>"; //
-            }
+    } elseif (isset($_POST["update_user"])) {
+        $newName = $_POST["new_name"];
+        $oldEmail = $_POST["old_email"];
+
+        // Use prepared statement
+        $stmt = $conn->prepare("UPDATE $tablename SET name=? WHERE email=?");
+        $stmt->bind_param("ss", $newName, $oldEmail);
+        if ($stmt->execute() && $stmt->affected_rows > 0) {
+            echo "<p style='color: green;'>User updated successfully!</p>";
         } else {
-            echo "<p style='color: red;'>Error updating user: " . $conn->error . "</p>";
+            echo "<p style='color: red;'>No user found with that email. Update failed.</p>";
         }
-    } elseif (isset($_POST["delete_user"])) { // 5. Delete user
-        $sql = "DELETE FROM users WHERE email='han.nwin@example.com'";
-        if ($conn->query($sql) === true) {
+        $stmt->close();
+    } elseif (isset($_POST["delete_user"])) {
+        $deleteEmail = $_POST["delete_email"];
+
+        // Use prepared statement
+        $stmt = $conn->prepare("DELETE FROM $tablename WHERE email=?");
+        $stmt->bind_param("s", $deleteEmail);
+        if ($stmt->execute() && $stmt->affected_rows > 0) {
             echo "<p style='color: green;'>User deleted successfully!</p>";
         } else {
-            echo "<p style='color: red;'>Error deleting user: " . $conn->error . "</p>";
+            echo "<p style='color: red;'>No user found with that email. Deletion failed.</p>";
         }
+        $stmt->close();
     } elseif (isset($_POST["remove_table"]) && $tableExists) {
-        $sql = "DROP TABLE users";
+        $sql = "DROP TABLE $tablename";
         if ($conn->query($sql) === true) {
-            echo "<p style='color: red;'>Table 'users' has been removed.</p>";
+            echo "<p style='color: red;'>Table '$tablename' has been removed.</p>";
             $tableExists = false;
         } else {
             echo "<p style='color: red;'>Error removing table: " . $conn->error . "</p>";
@@ -96,29 +105,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Close connection
 $conn->close();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PHP MySQL Demo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap">
+    <script src="script.js" defer></script>
+    <title>Study Group Matcher</title>
 </head>
 <body>
-    <h2>PHP MySQL CRUD Demo</h2>
-    <p style="color: red; font-weight: bold;">⚠ Click "Create Table" first before using other buttons!</p>
+    <h2>PHP MySQL CRUD with Input Fields Demo</h2>
+    <p style="color: red; font-weight: bold;">⚠ A Table must be created first before using other buttons!</p>
 
     <form method="post">
         <button type="submit" name="create_table" <?php echo $tableExists ? 'disabled' : ''; ?>>Create Table</button>
         <button type="submit" name="remove_table" <?php echo $tableExists ? '' : 'disabled'; ?>>Remove Table</button>
+    </form>
+
+    <h3>Insert User</h3>
+    <form method="post">
+        <input type="text" name="name" placeholder="Enter Name" required>
+        <input type="email" name="email" placeholder="Enter Email" required> </br>
         <button type="submit" name="insert_user" <?php echo $tableExists ? '' : 'disabled'; ?>>Insert User</button>
+    </form>
+
+    <h3>Retrieve Users</h3>
+    <form method="post">
         <button type="submit" name="retrieve_users" <?php echo $tableExists ? '' : 'disabled'; ?>>Retrieve Users</button>
+    </form>
+
+    <h3>Update User</h3>
+    <form method="post">
+        <input type="email" name="old_email" placeholder="Current Email" required>
+        <input type="text" name="new_name" placeholder="New Name" required> </br>
         <button type="submit" name="update_user" <?php echo $tableExists ? '' : 'disabled'; ?>>Update User</button>
+    </form>
+
+    <h3>Delete User</h3>
+    <form method="post">
+        <input type="email" name="delete_email" placeholder="Enter Email to Delete" required> </br>
         <button type="submit" name="delete_user" <?php echo $tableExists ? '' : 'disabled'; ?>>Delete User</button>
     </form>
+
 </body>
     <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
         /* General Button Styles */
         button {
             font-size: 16px;
@@ -139,8 +176,8 @@ $conn->close();
 
         /* Styling Button That Is Disabled */
         button:disabled {
-            background-color: #aaaaaa; /* Grey */
-            cursor: not-allowed;
+            background-color: #aaaaaa !important; /* Grey */
+            cursor: not-allowed !important;
         }
 
         /* Other Buttons */
