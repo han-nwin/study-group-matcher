@@ -14,7 +14,7 @@ if ($conn->connect_error) {
 
 // Create the database if it doesn't exist
 $sql = "CREATE DATABASE IF NOT EXISTS $dbname";
-if ($conn->query($sql) === TRUE) {
+if ($conn->query($sql) === true) {
     echo "<p style='color: green;'>Database '$dbname' is ready!</p>";
 } else {
     echo "<p style='color: red;'>Error creating database: " . $conn->error . "</p>";
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             name VARCHAR(50) NOT NULL,
             email VARCHAR(100) NOT NULL UNIQUE
         )";
-        if ($conn->query($sql) === TRUE) {
+        if ($conn->query($sql) === true) {
             echo "<p style='color: green;'>Table 'users' is ready!</p>";
             $tableExists = true;
         } else {
@@ -49,7 +49,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $name = "Han Nguyen";
         $email = "han.nwin@example.com";
         $sql = "INSERT INTO users (name, email) VALUES ('$name', '$email')";
-        if ($conn->query($sql) === TRUE) {
+        if ($conn->query($sql) === true) {
             echo "<p style='color: green;'>New user added!</p>";
         } else {
             echo "<p style='color: red;'>Error: " . $conn->error . "</p>";
@@ -69,25 +69,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($_POST["update_user"])) { // 4. Update user
         $newName = "NAH NEYUGN";
         $sql = "UPDATE users SET name='$newName' WHERE email='han.nwin@example.com'";
-        if ($conn->query($sql) === TRUE) {
+        if ($conn->query($sql) === true) {
             if ($conn->affected_rows > 0) {
-                echo "<p style='color: green;'>User updated successfully!</p>"; // ❌ Wrong message
+                echo "<p style='color: green;'>User updated successfully!</p>"; //
             } else {
-                echo "<p style='color: red;'>No user found with that email. Update failed.</p>"; // ❌ Wrong check
+                echo "<p style='color: red;'>No user found with that email. Update failed.</p>"; //
             }
         } else {
             echo "<p style='color: red;'>Error updating user: " . $conn->error . "</p>";
         }
     } elseif (isset($_POST["delete_user"])) { // 5. Delete user
         $sql = "DELETE FROM users WHERE email='han.nwin@example.com'";
-        if ($conn->query($sql) === TRUE) {
+        if ($conn->query($sql) === true) {
             echo "<p style='color: green;'>User deleted successfully!</p>";
         } else {
             echo "<p style='color: red;'>Error deleting user: " . $conn->error . "</p>";
         }
     } elseif (isset($_POST["remove_table"]) && $tableExists) {
         $sql = "DROP TABLE users";
-        if ($conn->query($sql) === TRUE) {
+        if ($conn->query($sql) === true) {
             echo "<p style='color: red;'>Table 'users' has been removed.</p>";
             $tableExists = false;
         } else {
