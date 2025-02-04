@@ -47,16 +47,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } elseif (isset($_POST["insert_user"])) {
         $name = $_POST["name"];
         $email = $_POST["email"];
-        
-        // Use prepared statement
-        $stmt = $conn->prepare("INSERT INTO $tablename (name, email) VALUES (?, ?)");
-        $stmt->bind_param("ss", $name, $email);
-        if ($stmt->execute()) {
-            echo "<p style='color: green;'>New user added: $name ($email)</p>";
+
+        // Check if email already exist
+        $sql_check = "SELECT * FROM $tablename WHERE email='$email'";
+        $check_result = $conn->query($sql_check);
+        if ($check_result->num_rows > 0) {
+            echo "<p style='color: red;'> Error: email has already been taken </p>";
         } else {
-            echo "<p style='color: red;'>Error: " . $stmt->error . "</p>";
+            // Use prepared statement
+            $stmt = $conn->prepare("INSERT INTO $tablename (name, email) VALUES (?, ?)");
+            $stmt->bind_param("ss", $name, $email);
+            if ($stmt->execute()) {
+                echo "<p style='color: green;'>New user added: $name ($email)</p>";
+            } else {
+                echo "<p style='color: red;'>Error: " . $stmt->error . "</p>";
+            }
+            $stmt->close();
         }
-        $stmt->close();
     } elseif (isset($_POST["retrieve_users"])) {
         $sql = "SELECT * FROM $tablename";
         $result = $conn->query($sql);
