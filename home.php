@@ -78,15 +78,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     } elseif (isset($_POST["update_user"])) {
         $newName = $_POST["new_name"];
-        $oldEmail = $_POST["old_email"];
+        $id = $_POST["id"];
 
         // Use prepared statement
-        $stmt = $conn->prepare("UPDATE $tablename SET name=? WHERE email=?");
-        $stmt->bind_param("ss", $newName, $oldEmail);
+        $stmt = $conn->prepare("UPDATE $tablename SET name=? WHERE ID=?");
+        $stmt->bind_param("ss", $newName, $id);
         if ($stmt->execute() && $stmt->affected_rows > 0) {
             echo "<p style='color: green;'>User updated successfully!</p>";
         } else {
-            echo "<p style='color: red;'>No user found with that email. Update failed.</p>";
+            echo "<p style='color: red;'>No user found with that id. Update failed.</p>";
         }
         $stmt->close();
     } elseif (isset($_POST["delete_user"])) {
@@ -140,19 +140,19 @@ $conn->close();
         <button type="submit" name="insert_user" <?php echo $tableExists ? '' : 'disabled'; ?>>Insert User</button>
     </form>
 
-    <h3>Retrieve Users</h3>
+    <h3>Retrieve All Users</h3>
     <form method="post">
         <button type="submit" name="retrieve_users" <?php echo $tableExists ? '' : 'disabled'; ?>>Retrieve Users</button>
     </form>
 
-    <h3>Update User</h3>
+    <h3>Update User by ID</h3>
     <form method="post">
-        <input type="email" name="old_email" placeholder="Current Email" required>
+        <input type="text" name="id" placeholder="User ID" required>
         <input type="text" name="new_name" placeholder="New Name" required> </br>
         <button type="submit" name="update_user" <?php echo $tableExists ? '' : 'disabled'; ?>>Update User</button>
     </form>
 
-    <h3>Delete User</h3>
+    <h3>Delete User by Email</h3>
     <form method="post">
         <input type="email" name="delete_email" placeholder="Enter Email to Delete" required> </br>
         <button type="submit" name="delete_user" <?php echo $tableExists ? '' : 'disabled'; ?>>Delete User</button>
