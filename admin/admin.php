@@ -17,6 +17,11 @@ $conn->select_db($dbname);
 
 // Array of tables with their creation queries
 $tables = [
+    "departments" => "CREATE TABLE IF NOT EXISTS departments (
+        DepartmentId INT AUTO_INCREMENT PRIMARY KEY,
+        Name VARCHAR(100) NOT NULL,
+        Address TEXT
+    )",
     "students" => "CREATE TABLE students (
         StudentId INT AUTO_INCREMENT PRIMARY KEY,
         FirstName VARCHAR(50) NOT NULL,
@@ -26,11 +31,6 @@ $tables = [
         DepartmentId INT,
         FOREIGN KEY (DepartmentId) REFERENCES departments(DepartmentId) ON DELETE SET NULL
     );",
-    "departments" => "CREATE TABLE IF NOT EXISTS departments (
-        DepartmentId INT AUTO_INCREMENT PRIMARY KEY,
-        Name VARCHAR(100) NOT NULL,
-        Address TEXT
-    )",
     "professors" => "CREATE TABLE IF NOT EXISTS professors (
         ProfessorId INT AUTO_INCREMENT PRIMARY KEY,
         FirstName VARCHAR(50) NOT NULL,
