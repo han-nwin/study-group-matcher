@@ -4,14 +4,12 @@ $username = "root";
 $password = "";
 $dbname = "study_group_matcher";
 
-// Establish database connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 if ($conn->connect_error) {
     echo "<p style='color: red;'>Connection failed: " . htmlspecialchars($conn->connect_error) . "</p>";
-    exit; // Stop script execution
+    exit;
 }
 
-// Ensure errors are caught instead of breaking the page
 mysqli_report(MYSQLI_REPORT_OFF);
 
 function executeQuery($conn, $query)
@@ -62,16 +60,20 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manage Data - Study Group Matcher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Data Management</h2>
-    <form method="post">
-        <textarea name="query" rows="10" cols="100" placeholder="Enter SQL query..."></textarea><br>
-        <button type="submit">Execute</button>
-    </form>
-    <br>
-    <form action="admin.php" method="get">
-        <button type="submit">Back to Admin Panel</button>
-    </form>
+<body class="bg-dark text-light">
+    <div class="container mt-4">
+        <h2>Data Management</h2>
+        <form method="post">
+            <textarea name="query" rows="10" cols="100" class="form-control mb-3" placeholder="Enter SQL query..."></textarea>
+            <button type="submit" class="btn btn-primary">Execute</button>
+        </form>
+        <br>
+        <form action="admin.php" method="get">
+            <button type="submit" class="btn btn-secondary">Back to Admin Panel</button>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

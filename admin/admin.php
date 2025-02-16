@@ -21,7 +21,8 @@ $tables = [
         StudentId INT AUTO_INCREMENT PRIMARY KEY,
         FirstName VARCHAR(50) NOT NULL,
         LastName VARCHAR(50) NOT NULL,
-        Email VARCHAR(100) NOT NULL UNIQUE
+        Email VARCHAR(100) NOT NULL UNIQUE,
+        Password VARCHAR(255) NOT NULL
     )",
     "departments" => "CREATE TABLE IF NOT EXISTS departments (
         DepartmentId INT AUTO_INCREMENT PRIMARY KEY,
@@ -33,6 +34,7 @@ $tables = [
         FirstName VARCHAR(50) NOT NULL,
         LastName VARCHAR(50) NOT NULL,
         Email VARCHAR(100) NOT NULL UNIQUE,
+        Password VARCHAR(255) NOT NULL,
         DepartmentId INT,
         FOREIGN KEY (DepartmentId) REFERENCES departments(DepartmentId) ON DELETE SET NULL
     )",
