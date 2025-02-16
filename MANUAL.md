@@ -28,13 +28,13 @@ VALUES ('Xinda', 'Wang', 'xindawang@email.com', 'hashedpassword', 1);
 ### Insert a Course
 ```sql
 INSERT INTO courses (CourseID, Name, ProfessorId, DepartmentId)
-VALUES ('CS101', 'Introduction to Programming', 1, 1);
+VALUES ('CS4347', 'Database System', 1, 1);
 ```
 
 ### Insert a Study Group
 ```sql
 INSERT INTO study_groups (CourseId, LeaderStudentId, GroupName, GroupType, ProfessorApproval)
-VALUES ('CS101', 1, 'SQL Wizards', 'Exam Prep', TRUE);
+VALUES ('CS4347', 1, 'SQL Wizards', 'Exam Prep', TRUE);
 ```
 
 ### Insert a Request to Join a Group

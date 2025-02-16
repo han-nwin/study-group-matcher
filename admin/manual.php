@@ -38,7 +38,7 @@ VALUES ('Xinda', 'Wang', 'xindawang@email.com', 'hashedpassword', 1);</code></pr
         
         <h3>Insert a Course</h3>
         <pre><code>INSERT INTO courses (CourseID, Name, ProfessorId, DepartmentId)
-VALUES ('CS101', 'Introduction to Programming', 1, 1);</code></pre>
+VALUES ('CS4347', 'Database Systems', 1, 1);</code></pre>
         
         <h3>Insert a Study Group</h3>
         <pre><code>INSERT INTO study_groups (CourseId, LeaderStudentId, GroupName, GroupType, ProfessorApproval)
