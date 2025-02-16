@@ -28,7 +28,7 @@ VALUES ('Xinda', 'Wang', 'xindawang@email.com', 'hashedpassword', 1);
 ### Insert a Course
 ```sql
 INSERT INTO courses (CourseID, Name, ProfessorId, DepartmentId)
-VALUES ('CS4347', 'Database System', 1, 1);
+VALUES ('CS4347', 'Database Systems', 1, 1);
 ```
 
 ### Insert a Study Group
@@ -52,7 +52,7 @@ SELECT * FROM students;
 
 ### Retrieve All Study Groups
 ```sql
-SELECT * FROM study_groups WHERE CourseId = 'CS101';
+SELECT * FROM study_groups WHERE CourseId = 'CS4347';
 ```
 
 ### Retrieve All Requests
@@ -77,7 +77,7 @@ UPDATE students SET Email = 'newemail@example.com' WHERE StudentId = 1;
 
 ### Approve a Pending Request
 ```sql
-UPDATE requests SET Status = 'Accepted' WHERE RequestId = 2;
+UPDATE requests SET Status = 'Accepted' WHERE StudentId = 2 AND GroupId = 1;
 ```
 
 ### Change the Leader of a Study Group

@@ -53,7 +53,7 @@ VALUES (2, 1, 'Pending');</code></pre>
         <pre><code>SELECT * FROM students;</code></pre>
 
         <h3>Retrieve All Study Groups</h3>
-        <pre><code>SELECT * FROM study_groups WHERE CourseId = 'CS101';</code></pre>
+        <pre><code>SELECT * FROM study_groups WHERE CourseId = 'CS4347';</code></pre>
 
         <h3>Retrieve All Requests</h3>
         <pre><code>SELECT * FROM requests WHERE GroupId = 1;</code></pre>
@@ -69,7 +69,7 @@ WHERE requests.GroupId = 1;</code></pre>
         <pre><code>UPDATE students SET Email = 'newemail@example.com' WHERE StudentId = 1;</code></pre>
 
         <h3>Approve a Pending Request</h3>
-        <pre><code>UPDATE requests SET Status = 'Accepted' WHERE RequestId = 2;</code></pre>
+        <pre><code>UPDATE requests SET Status = 'Accepted' WHERE StudentId = 2 AND GroupId = 1;</code></pre>
 
         <h3>Change the Leader of a Study Group</h3>
         <pre><code>UPDATE study_groups SET LeaderStudentId = 3 WHERE GroupId = 1;</code></pre>

@@ -57,13 +57,13 @@ $tables = [
         FOREIGN KEY (LeaderStudentId) REFERENCES students(StudentId) ON DELETE SET NULL
     )",
     "requests" => "CREATE TABLE IF NOT EXISTS requests (
-        RequestId INT AUTO_INCREMENT PRIMARY KEY,
         StudentId INT,
         GroupId INT,
         Status ENUM('Pending', 'Accepted', 'Rejected') DEFAULT 'Pending',
+        PRIMARY KEY (StudentId, GroupId),  -- Composite Primary Key
         FOREIGN KEY (StudentId) REFERENCES students(StudentId) ON DELETE CASCADE,
         FOREIGN KEY (GroupId) REFERENCES study_groups(GroupId) ON DELETE CASCADE
-    )"
+    );"
 ];
 
 // Create tables and display their data
