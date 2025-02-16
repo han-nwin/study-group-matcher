@@ -18,13 +18,20 @@ function executeQuery($conn, $query)
         $result = $conn->query($query);
 
         if ($result === TRUE) {
-            echo "<p style='color: green;'>Operation successful.</p>";
+            echo "<p class='text-success'>Operation successful.</p>";
         } elseif ($result) {
-            echo "<h3>Results:</h3><table border='1'><tr>";
+            echo "<h3 class='mt-4 text-warning'>Query Results:</h3>";
+            echo "<div class='table-responsive'>";
+            echo "<table class='table table-dark table-bordered table-hover table-striped'>";
+            
+            // Table headers
+            echo "<thead class='thead-light'><tr>";
             while ($field = $result->fetch_field()) {
                 echo "<th>" . htmlspecialchars($field->name) . "</th>";
             }
-            echo "</tr>";
+            echo "</tr></thead><tbody>";
+            
+            // Table rows
             while ($row = $result->fetch_assoc()) {
                 echo "<tr>";
                 foreach ($row as $value) {
@@ -32,13 +39,15 @@ function executeQuery($conn, $query)
                 }
                 echo "</tr>";
             }
-            echo "</table>";
+            echo "</tbody></table></div>";
         } else {
             throw new Exception("SQL Error: " . $conn->error);
         }
     } catch (Exception $e) {
-        echo "<p style='color: red;'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
-        echo "<a href='manual.php'> Check Manual </a>";
+        echo "<div class='alert alert-danger' role='alert'>";
+        echo "<strong>Error:</strong> " . htmlspecialchars($e->getMessage());
+        echo "</div>";
+        echo "<a href='manual.php' class='btn btn-warning mt-2'>Check Manual</a>";
     }
 }
 

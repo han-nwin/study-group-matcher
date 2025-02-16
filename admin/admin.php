@@ -22,15 +22,6 @@ $tables = [
         Name VARCHAR(100) NOT NULL,
         Address TEXT
     )",
-    "students" => "CREATE TABLE students (
-        StudentId INT AUTO_INCREMENT PRIMARY KEY,
-        FirstName VARCHAR(50) NOT NULL,
-        LastName VARCHAR(50) NOT NULL,
-        Email VARCHAR(100) NOT NULL UNIQUE,
-        Password VARCHAR(255) NOT NULL,
-        DepartmentId INT,
-        FOREIGN KEY (DepartmentId) REFERENCES departments(DepartmentId) ON DELETE SET NULL
-    );",
     "professors" => "CREATE TABLE IF NOT EXISTS professors (
         ProfessorId INT AUTO_INCREMENT PRIMARY KEY,
         FirstName VARCHAR(50) NOT NULL,
@@ -44,8 +35,15 @@ $tables = [
         CourseID VARCHAR(20) PRIMARY KEY,
         Name VARCHAR(100) NOT NULL,
         ProfessorId INT,
+        FOREIGN KEY (ProfessorId) REFERENCES professors(ProfessorId) ON DELETE SET NULL
+    )",
+    "students" => "CREATE TABLE IF NOT EXISTS students (
+        StudentId INT AUTO_INCREMENT PRIMARY KEY,
+        FirstName VARCHAR(50) NOT NULL,
+        LastName VARCHAR(50) NOT NULL,
+        Email VARCHAR(100) NOT NULL UNIQUE,
+        Password VARCHAR(255) NOT NULL,
         DepartmentId INT,
-        FOREIGN KEY (ProfessorId) REFERENCES professors(ProfessorId) ON DELETE SET NULL,
         FOREIGN KEY (DepartmentId) REFERENCES departments(DepartmentId) ON DELETE SET NULL
     )",
     "study_groups" => "CREATE TABLE IF NOT EXISTS study_groups (
@@ -62,43 +60,22 @@ $tables = [
         StudentId INT,
         GroupId INT,
         Status ENUM('Pending', 'Accepted', 'Rejected') DEFAULT 'Pending',
-        PRIMARY KEY (StudentId, GroupId),  -- Composite Primary Key
+        PRIMARY KEY (StudentId, GroupId),
         FOREIGN KEY (StudentId) REFERENCES students(StudentId) ON DELETE CASCADE,
         FOREIGN KEY (GroupId) REFERENCES study_groups(GroupId) ON DELETE CASCADE
-    );"
+    )"
 ];
 
-// Create tables and display their data
+// Create tables and store the status
+$messages = [];
 foreach ($tables as $table => $query) {
     if ($conn->query($query) === TRUE) {
-        echo "<p style='color: green;'>Table '$table' is ready!</p>";
+        $messages[] = "<p class='text-success'>Table '$table' is ready! </p>";
     } else {
-        echo "<p style='color: red;'>Error creating table '$table': " . $conn->error . "</p>";
-    }
-
-    // Fetch and display table data
-    $result = $conn->query("SELECT * FROM $table");
-    if ($result && $result->num_rows > 0) {
-        echo "<h3>Data in '$table':</h3><table border='1'><tr>";
-        while ($field = $result->fetch_field()) {
-            echo "<th>{$field->name}</th>";
-        }
-        echo "</tr>";
-        while ($row = $result->fetch_assoc()) {
-            echo "<tr>";
-            foreach ($row as $value) {
-                echo "<td>$value</td>";
-            }
-            echo "</tr>";
-        }
-        echo "</table>";
-    } else {
-        echo "<p>No data found in '$table'.</p>";
+        $messages[] = "<p class='text-danger'>Error creating table '$table': " . $conn->error . "</p>";
     }
 }
 
-// Close connection
-$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -107,14 +84,59 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Study Group Matcher</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <h2>Admin Dashboard</h2>
-    <p style="color: blue; font-weight: bold;">⚠ Ensure all tables are created before performing operations!</p>
-    
-    <h3>Manage Data</h3>
-    <form action="manage.php" method="get">
-        <button type="submit">Go to Data Management</button>
-    </form>
+<body class="bg-dark text-light">
+    <div class="container mt-4">
+        <h2 class="text-center">Admin Dashboard</h2>
+        <p class="text-center text-warning">⚠ Ensure all tables are created before performing operations!</p>
+
+        <div class="text-center mt-4">
+            <form action="manage.php" method="get">
+                <button type="submit" class="btn btn-primary">Go to Data Management</button>
+            </form>
+        </div>
+
+        <!-- Display table creation status -->
+        <div>
+            <?php foreach ($messages as $message) echo $message; ?>
+        </div>
+
+        <h2 class="mt-4 text-primary">Database Table Data</h2>
+
+        <!-- Display Data from Each Table -->
+        <?php
+        foreach (array_keys($tables) as $table) {
+            echo "<h3 class='text-warning mt-3'>Table: $table</h3>";
+            $result = $conn->query("SELECT * FROM $table");
+            if ($result->num_rows > 0) {
+                echo "<div class='table-responsive'><table class='table table-dark table-striped'>";
+                echo "<thead class='thead-light'><tr>";
+                while ($field = $result->fetch_field()) {
+                    echo "<th>{$field->name}</th>";
+                }
+                echo "</tr></thead><tbody>";
+                while ($row = $result->fetch_assoc()) {
+                    echo "<tr>";
+                    foreach ($row as $value) {
+                        echo "<td>$value</td>";
+                    }
+                    echo "</tr>";
+                }
+                echo "</tbody></table></div>";
+            } else {
+                echo "<p class='text-muted'>No data available.</p>";
+            }
+        }
+        ?>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+<?php
+// Close connection
+$conn->close();
+?>
