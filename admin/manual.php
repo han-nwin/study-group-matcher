@@ -9,24 +9,24 @@ header("Content-Type: text/html; charset=UTF-8");
     <title>Operation Guide for Study Group Matcher</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; padding: 20px; background-color: #212529; color: white; }
+        body { font-family: Arial, sans-serif; background-color: #1e1e2f; color: white; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; padding: 20px; background: #29293d; border-radius: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
         h1, h2, h3 { color: #f8f9fa; }
         pre { background: #343a40; padding: 10px; border-radius: 5px; overflow-x: auto; color: #f8f9fa; }
         code { font-family: monospace; color: #d63384; }
-        .container { max-width: 900px; margin: auto; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-danger">TO RESET EVERYTHING RUN</h1>
+        <h1 class="text-danger text-center">TO RESET EVERYTHING RUN</h1>
         <pre><code>DROP TABLE IF EXISTS requests, study_groups, courses, professors, departments, students;</code></pre>
 
-        <h1 class="text-primary">OPERATION GUIDE FOR STUDY GROUP MATCHER</h1>
+        <h1 class="text-primary text-center">OPERATION GUIDE FOR STUDY GROUP MATCHER</h1>
 
         <h2>1. Inserting Data (INSERT INTO)</h2>
         <h3>Insert a Student</h3>
-        <pre><code>INSERT INTO students (FirstName, LastName, Email, Password) 
-VALUES ('Han', 'Nguyen', 'hannguyen@email.com', 'hashedpassword');</code></pre>
+        <pre><code>INSERT INTO students (FirstName, LastName, Email, Password, DepartmentId) 
+VALUES ('Han', 'Nguyen', 'hannguyen@email.com', 'hashedpassword', 1);</code></pre>
         
         <h3>Insert a Department</h3>
         <pre><code>INSERT INTO departments (Name, Address)
@@ -52,6 +52,9 @@ VALUES (2, 1, 'Pending');</code></pre>
         <h3>Retrieve All Students</h3>
         <pre><code>SELECT * FROM students;</code></pre>
 
+        <h3>Retrieve All Students in a Specific Department</h3>
+        <pre><code>SELECT * FROM students WHERE DepartmentId = 1;</code></pre>
+
         <h3>Retrieve All Study Groups</h3>
         <pre><code>SELECT * FROM study_groups WHERE CourseId = 'CS4347';</code></pre>
 
@@ -67,6 +70,9 @@ WHERE requests.GroupId = 1;</code></pre>
         <h2>3. Updating Data (UPDATE)</h2>
         <h3>Update a Student's Email</h3>
         <pre><code>UPDATE students SET Email = 'newemail@example.com' WHERE StudentId = 1;</code></pre>
+
+        <h3>Assign a Student to a New Department</h3>
+        <pre><code>UPDATE students SET DepartmentId = 2 WHERE StudentId = 1;</code></pre>
 
         <h3>Approve a Pending Request</h3>
         <pre><code>UPDATE requests SET Status = 'Accepted' WHERE StudentId = 2 AND GroupId = 1;</code></pre>

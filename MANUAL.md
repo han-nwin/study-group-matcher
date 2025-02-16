@@ -9,8 +9,8 @@ DROP TABLE IF EXISTS requests, study_groups, courses, professors, departments, s
 
 ### Insert a Student
 ```sql
-INSERT INTO students (FirstName, LastName, Email, Password) 
-VALUES ('Han', 'Nguyen', 'hannguyen@email.com', 'hashedpassword');
+INSERT INTO students (FirstName, LastName, Email, Password, DepartmentId) 
+VALUES ('Han', 'Nguyen', 'hannguyen@email.com', 'hashedpassword', 1);
 ```
 
 ### Insert a Department
@@ -50,6 +50,11 @@ VALUES (2, 1, 'Pending');
 SELECT * FROM students;
 ```
 
+### Retrieve All Students in a Specific Department
+```sql
+SELECT * FROM students WHERE DepartmentId = 1;
+```
+
 ### Retrieve All Study Groups
 ```sql
 SELECT * FROM study_groups WHERE CourseId = 'CS4347';
@@ -73,6 +78,11 @@ WHERE requests.GroupId = 1;
 ### Update a Student's Email
 ```sql
 UPDATE students SET Email = 'newemail@example.com' WHERE StudentId = 1;
+```
+
+### Assign a Student to a New Department
+```sql
+UPDATE students SET DepartmentId = 2 WHERE StudentId = 1;
 ```
 
 ### Approve a Pending Request
