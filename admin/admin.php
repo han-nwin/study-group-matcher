@@ -89,7 +89,7 @@ foreach ($tables as $table => $query) {
 <body class="bg-dark text-light">
     <div class="container mt-4">
         <h2 class="text-center">Admin Dashboard</h2>
-        <p class="text-center text-warning">⚠ Ensure all tables are created before performing operations!</p>
+        <!-- <p class="text-center text-warning">⚠ Ensure all tables are created before performing operations!</p> -->
 
         <div class="text-center mt-4">
             <form action="manage.php" method="get">
@@ -98,10 +98,12 @@ foreach ($tables as $table => $query) {
         </div>
 
         <!-- Display table creation status -->
+        <!--
         <div>
             <?php foreach ($messages as $message) echo $message; ?>
         </div>
 
+        -->
         <h2 class="mt-4 text-primary">Database Table Data</h2>
 
         <!-- Display Data from Each Table -->

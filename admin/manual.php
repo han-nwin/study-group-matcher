@@ -9,16 +9,17 @@ header("Content-Type: text/html; charset=UTF-8");
     <title>Database Operation Guide - Study Group Matcher</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #1e1e2f; color: white; margin: 0; padding: 20px; }
-        .container { max-width: 900px; margin: auto; padding: 20px; background: #29293d; border-radius: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
-        h1, h2, h3 { color: #f8f9fa; }
+        body { font-family: Arial, sans-serif; background-color: #11111b; color: white; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; padding: 20px; background: #181825	; border-radius: 10px; box-shadow: 0 0 10px rgba(255, 255, 255, 0.1); }
+        h2 { color: #eed49f; }
+        h3 { color: #f0c6c6; }
         pre { background: #343a40; padding: 10px; border-radius: 5px; overflow-x: auto; color: #f8f9fa; }
         code { font-family: monospace; color: #d63384; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-danger text-center">Reset Database</h1>
+        <h1 class="text-center" style="color:#e64553">Reset Database</h1>
         <pre><code>DROP TABLE IF EXISTS 
     requests, 
     study_groups, 
@@ -27,7 +28,7 @@ header("Content-Type: text/html; charset=UTF-8");
     professors, 
     departments;</code></pre>
 
-        <h1 class="text-primary text-center">Database Operations</h1>
+        <h1 class="text-center" style="color:#209fb5">Database Operations</h1>
         
         <h2>1. Insert Data</h2>
         <h3>Insert a Department</h3>
