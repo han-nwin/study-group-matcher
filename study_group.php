@@ -48,7 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-$result = $conn->query("SELECT study_groups.GroupId, study_groups.CourseId, study_groups.GroupName, study_groups.GroupType, courses.Name AS CourseName FROM study_groups JOIN courses ON study_groups.CourseId = courses.CourseID");
+$result = $conn->query("SELECT study_groups.GroupId, study_groups.CourseId, study_groups.GroupName, study_groups.GroupType, study_groups.ProfessorApproval, courses.Name 
+AS CourseName FROM study_groups JOIN courses ON study_groups.CourseId = courses.CourseID");
 ?>
 
 <!DOCTYPE html>
@@ -92,20 +93,24 @@ $result = $conn->query("SELECT study_groups.GroupId, study_groups.CourseId, stud
         <table class="table table-dark table-striped">
             <thead>
                 <tr>
+                    <th>Group Id</th>
                     <th>Group Name</th>
                     <th>Course Id</th>
                     <th>Course Name</th>
                     <th>Type</th>
+                    <th>Professor Approval</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
+                        <td><?= htmlspecialchars($row["GroupId"]) ?></td>
                         <td><?= htmlspecialchars($row["GroupName"]) ?></td>
                         <td><?= htmlspecialchars($row["CourseId"]) ?></td>
                         <td><?= htmlspecialchars($row["CourseName"]) ?></td>
                         <td><?= htmlspecialchars($row["GroupType"]) ?></td>
+                        <td><?= htmlspecialchars($row["ProfessorApproval"]) ?></td>
                         <td><button class="btn btn-warning" onclick="openJoinModal(<?= $row['GroupId'] ?>, '<?= $row['CourseId'] ?>')">Request to Join</button></td>
                     </tr>
                 <?php endwhile; ?>
