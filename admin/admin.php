@@ -46,9 +46,7 @@ $tables = [
         Email VARCHAR(100) NOT NULL UNIQUE,
         Password VARCHAR(255) NOT NULL,
         DepartmentId INT,
-        CourseId INT,
         FOREIGN KEY (DepartmentId) REFERENCES DEPARTMENT(DepartmentId) ON DELETE SET NULL,
-        FOREIGN KEY (CourseId) REFERENCES COURSE(CourseId) ON DELETE SET NULL
     )",
     "STUDY_GROUP" => "CREATE TABLE IF NOT EXISTS STUDY_GROUP (
         GroupId INT AUTO_INCREMENT,
@@ -68,7 +66,14 @@ $tables = [
         PRIMARY KEY (StudentId, GroupId),
         FOREIGN KEY (StudentId) REFERENCES STUDENT(StudentId) ON DELETE CASCADE,
         FOREIGN KEY (GroupId) REFERENCES STUDY_GROUP(GroupId) ON DELETE CASCADE
-    )"
+    )",
+    "ENROLL" => "CREATE TABLE IF NOT EXISTS ENROLL (
+        StudentId INT,
+        CourseId VARCHAR(20),
+        PRIMARY KEY (StudentId, CourseId),
+        FOREIGN KEY (StudentId) REFERENCES STUDENT(StudentId) ON DELETE CASCADE,
+        FOREIGN KEY (CourseId) REFERENCES COURSE(CourseID) ON DELETE CASCADE
+    )",
 ];
 
 // Create tables and store the status
