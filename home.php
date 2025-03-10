@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
@@ -15,12 +19,29 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link text-light" href="#overview">Overview</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="student_dashboard.php">Student Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="professor_dashboard.php">Professor Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="student_profile.php">Student Profile</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="professor_profile.php">Professor Profile</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="overview.php">Overview</a></li>
+
+                    <?php if (isset($_SESSION["StudentId"])): ?>
+                        <!-- Student-specific links -->
+                        <li class="nav-item"><a class="nav-link text-light" href="student_dashboard.php">Student Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" href="student_profile.php">Student Profile</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
+
+                    <?php elseif (isset($_SESSION["ProfessorId"])): ?>
+                        <!-- Professor-specific links -->
+                        <li class="nav-item"><a class="nav-link text-light" href="professor_dashboard.php">Professor Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" href="professor_profile.php">Professor Profile</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
+
+                    <?php else: ?>
+                        <!-- Links for non-logged-in users -->
+                        <li class="nav-item"><a class="nav-link text-light" href="login.php">Login</a></li>
+                        <li class="nav-item"><a class="nav-link text-light" href="register.php">Register</a></li>
+                    <?php endif; ?>
+
+                    <?php if (isset($_SESSION["StudentId"]) || isset($_SESSION["ProfessorId"])): ?>
+                        <li class="nav-item"><a class="nav-link text-danger" href="logout.php">Logout</a></li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -32,19 +53,34 @@
             <p class="lead text-light">Find, join, and manage study groups for your courses easily!</p>
         </section>
 
-        <section id="dashboard" class="mt-5">
-            <div class="row mt-3">
-                <div class="col-md-4">
-                    <a href="groups.php" class="btn btn-primary w-100 mb-2">View Study Groups</a>
+        <?php if (isset($_SESSION["StudentId"])): ?>
+            <!-- Student Actions -->
+            <section id="dashboard" class="mt-5">
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <a href="groups.php" class="btn btn-primary w-100 mb-2">View Study Groups</a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="create_group.php" class="btn btn-success w-100 mb-2">Create Study Group</a>
+                    </div>
+                    <div class="col-md-4">
+                        <a href="join_group.php" class="btn btn-warning w-100">Join Study Group</a>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <a href="create_group.php" class="btn btn-success w-100 mb-2">Create Study Group</a>
+            </section>
+        <?php elseif (isset($_SESSION["ProfessorId"])): ?>
+            <!-- Professor Actions -->
+            <section id="dashboard" class="mt-5">
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <a href="approve_groups.php" class="btn btn-info w-100 mb-2">Approve Study Groups</a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="manage_students.php" class="btn btn-secondary w-100">Manage Students</a>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <a href="join_group.php" class="btn btn-warning w-100">Join Study Group</a>
-                </div>
-            </div>
-        </section>
+            </section>
+        <?php endif; ?>
     </div>
 
     <footer class="bg-dark text-center py-3 mt-5">

@@ -40,22 +40,21 @@ $tables = [
         FOREIGN KEY (ProfessorId) REFERENCES PROFESSOR(ProfessorId) ON DELETE SET NULL
     )",
     "STUDENT" => "CREATE TABLE IF NOT EXISTS STUDENT (
-        StudentId INT AUTO_INCREMENT PRIMARY KEY,
+        StudentId INT AUTO_INCREMENT PRIMARY KEY UNIQUE,
         FirstName VARCHAR(50) NOT NULL,
         LastName VARCHAR(50) NOT NULL,
         Email VARCHAR(100) NOT NULL UNIQUE,
         Password VARCHAR(255) NOT NULL,
         DepartmentId INT,
-        FOREIGN KEY (DepartmentId) REFERENCES DEPARTMENT(DepartmentId) ON DELETE SET NULL,
+        FOREIGN KEY (DepartmentId) REFERENCES DEPARTMENT(DepartmentId) ON DELETE SET NULL
     )",
     "STUDY_GROUP" => "CREATE TABLE IF NOT EXISTS STUDY_GROUP (
-        GroupId INT AUTO_INCREMENT,
+        GroupId INT AUTO_INCREMENT PRIMARY KEY,
         CourseId VARCHAR(20) NOT NULL,
         LeaderStudentId INT,
         GroupName VARCHAR(100),
         GroupType VARCHAR(50),
         ProfessorApproval BOOLEAN DEFAULT FALSE,
-        PRIMARY KEY (GroupId, CourseId),
         FOREIGN KEY (CourseId) REFERENCES COURSE(CourseID) ON DELETE CASCADE,
         FOREIGN KEY (LeaderStudentId) REFERENCES STUDENT(StudentId) ON DELETE SET NULL
     )",
