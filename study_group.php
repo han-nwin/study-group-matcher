@@ -44,27 +44,10 @@ if ($isStudent) {
     $stmt->close();
 }
 
-// Fetch courses taught by professors
-$professorCourses = [];
-if ($isProfessor) {
-    $stmt = $conn->prepare("
-        SELECT c.CourseID, c.Name 
-        FROM COURSE c
-        WHERE c.ProfessorId = ?
-    ");
-    $stmt->bind_param("i", $professorId);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $professorCourses[] = $row;
-    }
-    $stmt->close();
-}
-
 // Fetch study groups relevant to user
 if ($isStudent) {
     $stmt = $conn->prepare("
-        SELECT sg.GroupId, sg.CourseId, sg.GroupName, sg.GroupType, sg.ProfessorApproval, c.Name AS CourseName, sg.LeaderStudentId
+        SELECT sg.GroupId, sg.CourseId, sg.GroupName, sg.GroupType, sg.ProfessorApproval, sg.Schedule, c.Name AS CourseName, sg.LeaderStudentId
         FROM STUDY_GROUP sg
         JOIN COURSE c ON sg.CourseId = c.CourseID
         JOIN ENROLL e ON sg.CourseId = e.CourseId
@@ -73,7 +56,7 @@ if ($isStudent) {
     $stmt->bind_param("i", $studentId);
 } elseif ($isProfessor) {
     $stmt = $conn->prepare("
-        SELECT sg.GroupId, sg.CourseId, sg.GroupName, sg.GroupType, sg.ProfessorApproval, c.Name AS CourseName
+        SELECT sg.GroupId, sg.CourseId, sg.GroupName, sg.GroupType, sg.ProfessorApproval, sg.Schedule, c.Name AS CourseName
         FROM STUDY_GROUP sg
         JOIN COURSE c ON sg.CourseId = c.CourseID
         WHERE c.ProfessorId = ?
@@ -83,7 +66,7 @@ if ($isStudent) {
 $stmt->execute();
 $studyGroups = $stmt->get_result();
 
-// Handle Study Group Approvals (Professor Only) and Reload Page
+// Handle Study Group Approvals (Professor Only)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["approve_group"]) && $isProfessor) {
     $groupId = sanitize_input($_POST["group_id"]);
     $updateStmt = $conn->prepare("UPDATE STUDY_GROUP SET ProfessorApproval = TRUE WHERE GroupId = ?");
@@ -95,17 +78,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["approve_group"]) && $i
     $updateStmt->close();
 }
 
-// Handle Study Group Creation (Student Only) and Reload Page
+// Handle Study Group Deletion (Leader Only)
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_group"]) && $isStudent) {
+    $groupId = sanitize_input($_POST["group_id"]);
+    $deleteStmt = $conn->prepare("DELETE FROM STUDY_GROUP WHERE GroupId = ? AND LeaderStudentId = ? AND ProfessorApproval = FALSE");
+    $deleteStmt->bind_param("ii", $groupId, $studentId);
+    if ($deleteStmt->execute()) {
+        header("Location: " . $_SERVER['PHP_SELF']); // Reload page
+        exit();
+    }
+    $deleteStmt->close();
+}
+
+// Handle Study Group Creation (Student Only)
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $isStudent) {
     $courseId = sanitize_input($_POST["course_id"]);
     $groupName = sanitize_input($_POST["group_name"]);
     $groupType = sanitize_input($_POST["group_type"]);
+    $scheduleJson = trim($_POST["schedule"]); // JSON schedule input
 
     $stmt = $conn->prepare("
-        INSERT INTO STUDY_GROUP (CourseId, LeaderStudentId, GroupName, GroupType, ProfessorApproval) 
-        VALUES (?, ?, ?, ?, FALSE)
+        INSERT INTO STUDY_GROUP (CourseId, LeaderStudentId, GroupName, GroupType, ProfessorApproval, Schedule) 
+        VALUES (?, ?, ?, ?, FALSE, ?)
     ");
-    $stmt->bind_param("siss", $courseId, $studentId, $groupName, $groupType);
+    $stmt->bind_param("sisss", $courseId, $studentId, $groupName, $groupType, $scheduleJson);
     if ($stmt->execute()) {
         header("Location: " . $_SERVER['PHP_SELF']); // Reload page
         exit();
@@ -124,41 +120,41 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $is
 </head>
 
 <body class="bg-dark text-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="home.php">Study Group Matcher</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link text-light" href="overview.php">Overview</a></li>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+          <a class="navbar-brand" href="home.php">Study Group Matcher</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav">
+                  <li class="nav-item"><a class="nav-link text-light" href="overview.php">Overview</a></li>
 
-                    <?php if (isset($_SESSION["StudentId"])): ?>
-                        <!-- Student-specific links -->
-                        <li class="nav-item"><a class="nav-link text-light" href="student_dashboard.php">Student Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link text-light" href="student_profile.php">Student Profile</a></li>
-                        <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
+                  <?php if (isset($_SESSION["StudentId"])): ?>
+                      <!-- Student-specific links -->
+                      <li class="nav-item"><a class="nav-link text-light" href="student_dashboard.php">Student Dashboard</a></li>
+                      <li class="nav-item"><a class="nav-link text-light" href="student_profile.php">Student Profile</a></li>
+                      <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
 
-                    <?php elseif (isset($_SESSION["ProfessorId"])): ?>
-                        <!-- Professor-specific links -->
-                        <li class="nav-item"><a class="nav-link text-light" href="professor_dashboard.php">Professor Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link text-light" href="professor_profile.php">Professor Profile</a></li>
-                        <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
+                  <?php elseif (isset($_SESSION["ProfessorId"])): ?>
+                      <!-- Professor-specific links -->
+                      <li class="nav-item"><a class="nav-link text-light" href="professor_dashboard.php">Professor Dashboard</a></li>
+                      <li class="nav-item"><a class="nav-link text-light" href="professor_profile.php">Professor Profile</a></li>
+                      <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
 
-                    <?php else: ?>
-                        <!-- Links for non-logged-in users -->
-                        <li class="nav-item"><a class="nav-link text-light" href="login.php">Login</a></li>
-                        <li class="nav-item"><a class="nav-link text-light" href="register.php">Register</a></li>
-                    <?php endif; ?>
+                  <?php else: ?>
+                      <!-- Links for non-logged-in users -->
+                      <li class="nav-item"><a class="nav-link text-light" href="login.php">Login</a></li>
+                      <li class="nav-item"><a class="nav-link text-light" href="register.php">Register</a></li>
+                  <?php endif; ?>
 
-                    <?php if (isset($_SESSION["StudentId"]) || isset($_SESSION["ProfessorId"])): ?>
-                        <li class="nav-item"><a class="nav-link text-danger" href="logout.php">Logout</a></li>
-                    <?php endif; ?>
-                </ul>
-            </div>
-        </div>
-    </nav>
+                  <?php if (isset($_SESSION["StudentId"]) || isset($_SESSION["ProfessorId"])): ?>
+                      <li class="nav-item"><a class="nav-link text-danger" href="logout.php">Logout</a></li>
+                  <?php endif; ?>
+              </ul>
+          </div>
+      </div>
+  </nav>
 
     <div class="container mt-4">
         <h2 class="text-light">Available Study Groups</h2>
@@ -169,6 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $is
                     <th>Course</th>
                     <th>Type</th>
                     <th>Professor Approval</th>
+                    <th>Schedule</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -180,12 +177,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $is
                         <td><?= htmlspecialchars($row["GroupType"]) ?></td>
                         <td><?= $row["ProfessorApproval"] ? "Approved" : "Pending" ?></td>
                         <td>
-                            <?php if ($isStudent): ?>
-                                <?php if ($row["LeaderStudentId"] == $studentId): ?>
-                                    <button class="btn btn-secondary" disabled>Leader</button>
-                                <?php else: ?>
-                                    <button class="btn btn-warning">Request to Join</button>
-                                <?php endif; ?>
+                            <?php 
+                                $schedule = json_decode($row["Schedule"], true);
+                                if ($schedule) {
+                                    foreach ($schedule as $day) {
+                                        echo htmlspecialchars($day['day']) . ": " . htmlspecialchars($day['start']) . " - " . htmlspecialchars($day['end']) . "<br>";
+                                    }
+                                } else {
+                                    echo "Not Set";
+                                }
+                            ?>
+                        </td>
+                        <td>
+                            <?php if ($isStudent && $row["LeaderStudentId"] == $studentId && !$row["ProfessorApproval"]): ?>
+                                <form method="post">
+                                    <input type="hidden" name="group_id" value="<?= $row['GroupId'] ?>">
+                                    <button type="submit" name="delete_group" class="btn btn-danger">Delete</button>
+                                </form>
                             <?php elseif ($isProfessor && !$row["ProfessorApproval"]): ?>
                                 <form method="post">
                                     <input type="hidden" name="group_id" value="<?= $row['GroupId'] ?>">
@@ -208,7 +216,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $is
                     <?php endforeach; ?>
                 </select>
                 <input type="text" name="group_name" class="form-control mb-2" placeholder="Group Name" required>
-                <input type="text" name="group_type" class="form-control mb-2" placeholder="Group Type (e.g., Exam Prep)" required>
+                <input type="text" name="group_type" class="form-control mb-2" placeholder="Group Type" required>
+                <textarea 
+                    name="schedule" class="form-control mb-2" 
+                    placeholder='Enter JSON schedule e.g. [{"day":"Monday","start":"14:00","end":"16:00"}, {"day":"Tuesday","start":"12:00","end":"15:00"}]' 
+                    required
+                ></textarea>
                 <button type="submit" name="create_group" class="btn btn-success w-100">Create Study Group</button>
             </form>
         <?php endif; ?>

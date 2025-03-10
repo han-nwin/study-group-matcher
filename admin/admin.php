@@ -54,6 +54,7 @@ $tables = [
         LeaderStudentId INT,
         GroupName VARCHAR(100),
         GroupType VARCHAR(50),
+        Schedule JSON,
         ProfessorApproval BOOLEAN DEFAULT FALSE,
         FOREIGN KEY (CourseId) REFERENCES COURSE(CourseID) ON DELETE CASCADE,
         FOREIGN KEY (LeaderStudentId) REFERENCES STUDENT(StudentId) ON DELETE SET NULL
