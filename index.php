@@ -7,7 +7,7 @@ if (isset($_SESSION["StudentId"]) || isset($_SESSION["ProfessorId"])) {
     exit();
 }
 
-$servername = "localhost";
+$servername = "mysql";
 $username = "root";  // Replace with your MySQL user
 $password = "";  // Replace with your MySQL password
 $dbname = "study_group_matcher"; // Updated database name

@@ -1,5 +1,5 @@
 <?php
-$servername = "localhost";
+$servername = "mysql";
 $username = "root";
 $password = "";
 $dbname = "study_group_matcher";
