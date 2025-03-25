@@ -66,3 +66,46 @@ CREATE TABLE IF NOT EXISTS ENROLL (
     FOREIGN KEY (StudentId) REFERENCES STUDENT(StudentId) ON DELETE CASCADE,
     FOREIGN KEY (CourseId) REFERENCES COURSE(CourseID) ON DELETE CASCADE
 );
+
+-- Insert Sample Data
+-- Insert Departments
+INSERT INTO DEPARTMENT (Name, Address) VALUES
+('Computer Science', '123 Tech Building, University Campus'),
+('Mathematics', '456 Math Hall, University Campus'),
+('Physics', '789 Science Center, University Campus');
+
+-- Insert Professors (passwords are hashed using SHA-1 for 'prof123')
+INSERT INTO PROFESSOR (FirstName, LastName, Email, Password, DepartmentId) VALUES
+('John', 'Smith', 'john.smith@university.edu', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', 1), -- Computer Science
+('Emily', 'Johnson', 'emily.johnson@university.edu', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', 2), -- Mathematics
+('Michael', 'Brown', 'michael.brown@university.edu', '40bd001563085fc35165329ea1ff5c5ecbdbbeef', 3); -- Physics
+
+-- Insert Courses
+INSERT INTO COURSE (CourseID, Name, DepartmentId, ProfessorId) VALUES
+('CS101', 'Introduction to Programming', 1, 1), -- Computer Science, John Smith
+('MATH201', 'Calculus I', 2, 2), -- Mathematics, Emily Johnson
+('PHYS101', 'Physics I', 3, 3); -- Physics, Michael Brown
+
+-- Insert Students (passwords are hashed using SHA-1 for 'student123')
+INSERT INTO STUDENT (FirstName, LastName, Email, Password, DepartmentId) VALUES
+('Alice', 'Davis', 'alice.davis@university.edu', 'a948904f2f0f479b8f8197694b30184b0d2ed1c', 1), -- Computer Science
+('Bob', 'Wilson', 'bob.wilson@university.edu', 'a948904f2f0f479b8f8197694b30184b0d2ed1c', 1), -- Computer Science
+('Charlie', 'Miller', 'charlie.miller@university.edu', 'a948904f2f0f479b8f8197694b30184b0d2ed1c', 2); -- Mathematics
+
+-- Insert Study Groups
+INSERT INTO STUDY_GROUP (CourseId, LeaderStudentId, GroupName, GroupType, Schedule, ProfessorApproval) VALUES
+('CS101', 1, 'CS101 Study Group 1', 'Collaborative', '{"day": "Monday", "time": "14:00-16:00"}', TRUE), -- Alice leads, approved
+('CS101', 2, 'CS101 Study Group 2', 'Peer-led', '{"day": "Wednesday", "time": "10:00-12:00"}', FALSE), -- Bob leads, not approved
+('MATH201', 3, 'Calculus Study Group', 'Collaborative', '{"day": "Friday", "time": "13:00-15:00"}', TRUE); -- Charlie leads, approved
+
+-- Insert Requests
+INSERT INTO REQUEST (StudentId, GroupId, Status) VALUES
+(2, 1, 'Pending'), -- Bob requests to join Alice's group
+(3, 1, 'Accepted'), -- Charlie is accepted into Alice's group
+(1, 3, 'Pending'); -- Alice requests to join Charlie's group
+
+-- Insert Enrollments
+INSERT INTO ENROLL (StudentId, CourseId) VALUES
+(1, 'CS101'), -- Alice enrolled in CS101
+(2, 'CS101'), -- Bob enrolled in CS101
+(3, 'MATH201'); -- Charlie enrolled in MATH201
