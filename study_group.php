@@ -1,14 +1,9 @@
 <?php
+ob_start();
 session_start();
-$servername = "mysql";
-$username = "root";
-$password = "";
-$dbname = "study_group_matcher";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include 'navbar.php';
+require_once "db.php"; // Call the db
+/** @var \mysqli $conn */ // Get the $conn global var
 
 function sanitize_input($data) {
     return htmlspecialchars(strip_tags(trim($data)));
@@ -42,6 +37,31 @@ if ($isStudent) {
         $studentCourses[] = $row;
     }
     $stmt->close();
+}
+
+// Handle Request to Join Study Group (Student Only)
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["request_group"]) && $isStudent) {
+    $groupId = intval($_POST["group_id"]);
+
+    // Check if a request already exists (safety check)
+    $stmt = $conn->prepare("SELECT * FROM REQUEST WHERE StudentId = ? AND GroupId = ?");
+    $stmt->bind_param("ii", $studentId, $groupId);
+    $stmt->execute();
+    $existingRequest = $stmt->get_result();
+    $stmt->close();
+
+    if ($existingRequest->num_rows === 0) {
+        // Create new request
+        $stmt = $conn->prepare("INSERT INTO REQUEST (StudentId, GroupId, Status) VALUES (?, ?, 'Pending')");
+        $stmt->bind_param("ii", $studentId, $groupId);
+        if ($stmt->execute()) {
+            header("Location: " . $_SERVER["PHP_SELF"]); // Refresh page to reflect the new request
+            exit();
+        } else {
+            echo "<script>alert('Failed to send join request');</script>";
+        }
+        $stmt->close();
+    }
 }
 
 // Fetch study groups relevant to user
@@ -108,6 +128,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $is
     }
     $stmt->close();
 }
+
+//Fetch groups for leaders to manage
+$leaderRequests = [];
+if ($isStudent) {
+    $stmt = $conn->prepare("
+        SELECT r.StudentId, s.FirstName, s.LastName, r.Status, sg.GroupId, sg.GroupName
+        FROM REQUEST r
+        JOIN STUDENT s ON r.StudentId = s.StudentId
+        JOIN STUDY_GROUP sg ON r.GroupId = sg.GroupId
+        WHERE sg.LeaderStudentId = ?
+    ");
+    $stmt->bind_param("i", $studentId);
+    $stmt->execute();
+    $leaderRequests = $stmt->get_result();
+}
+
+// Handle Accept or Reject actions (Leader Only)
+if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["manage_request"]) && $isStudent) {
+    $targetStudentId = intval($_POST["target_student_id"]);
+    $targetGroupId = intval($_POST["target_group_id"]);
+    $action = $_POST["action"]; // Should be 'Accepted' or 'Rejected'
+
+    if (in_array($action, ['Accepted', 'Rejected'])) {
+        $stmt = $conn->prepare("
+            UPDATE REQUEST 
+            SET Status = ? 
+            WHERE StudentId = ? AND GroupId = ?
+        ");
+        $stmt->bind_param("sii", $action, $targetStudentId, $targetGroupId);
+        $stmt->execute();
+        $stmt->close();
+
+        header("Location: " . $_SERVER['PHP_SELF']);
+        exit();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -120,42 +176,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $is
 </head>
 
 <body class="bg-dark text-light">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid">
-          <a class="navbar-brand" href="home.php">Study Group Matcher</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-              <ul class="navbar-nav">
-                  <li class="nav-item"><a class="nav-link text-light" href="overview.php">Overview</a></li>
-
-                  <?php if (isset($_SESSION["StudentId"])): ?>
-                      <!-- Student-specific links -->
-                      <li class="nav-item"><a class="nav-link text-light" href="student_dashboard.php">Student Dashboard</a></li>
-                      <li class="nav-item"><a class="nav-link text-light" href="student_profile.php">Student Profile</a></li>
-                      <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
-
-                  <?php elseif (isset($_SESSION["ProfessorId"])): ?>
-                      <!-- Professor-specific links -->
-                      <li class="nav-item"><a class="nav-link text-light" href="professor_dashboard.php">Professor Dashboard</a></li>
-                      <li class="nav-item"><a class="nav-link text-light" href="professor_profile.php">Professor Profile</a></li>
-                      <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
-
-                  <?php else: ?>
-                      <!-- Links for non-logged-in users -->
-                      <li class="nav-item"><a class="nav-link text-light" href="login.php">Login</a></li>
-                      <li class="nav-item"><a class="nav-link text-light" href="register.php">Register</a></li>
-                  <?php endif; ?>
-
-                  <?php if (isset($_SESSION["StudentId"]) || isset($_SESSION["ProfessorId"])): ?>
-                      <li class="nav-item"><a class="nav-link text-danger" href="logout.php">Logout</a></li>
-                  <?php endif; ?>
-              </ul>
-          </div>
-      </div>
-  </nav>
-
     <div class="container mt-4">
         <h2 class="text-light">Available Study Groups</h2>
         <table class="table table-dark table-striped">
@@ -189,22 +209,100 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $is
                             ?>
                         </td>
                         <td>
-                            <?php if ($isStudent && $row["LeaderStudentId"] == $studentId && !$row["ProfessorApproval"]): ?>
+                            <?php
+                            if ($isStudent) {
+                                $groupId = $row["GroupId"];
+                                $isLeader = $row["LeaderStudentId"] == $studentId;
+
+                                if ($isLeader && !$row["ProfessorApproval"]) {
+                                    // Group leader can delete unapproved group
+                                    ?>
+                                    <form method="post">
+                                        <input type="hidden" name="group_id" value="<?= $groupId ?>">
+                                        <button type="submit" name="delete_group" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                    <?php
+                                } elseif (!$isLeader) {
+                                    // Check request status
+                                    $checkRequest = $conn->prepare("SELECT Status FROM REQUEST WHERE StudentId = ? AND GroupId = ?");
+                                    $checkRequest->bind_param("ii", $studentId, $groupId);
+                                    $checkRequest->execute();
+                                    $requestResult = $checkRequest->get_result();
+
+                                    if ($requestResult->num_rows > 0) {
+                                        $status = $requestResult->fetch_assoc()["Status"];
+                                        echo "<span class='badge bg-secondary'>" . htmlspecialchars($status) . "</span>";
+                                    } else {
+                                        // No request yet — show request button
+                                        ?>
+                                        <form method="post">
+                                            <input type="hidden" name="group_id" value="<?= $groupId ?>">
+                                            <button type="submit" name="request_group" class="btn btn-warning btn-sm">Request to Join</button>
+                                        </form>
+                                        <?php
+                                    }
+                                    $checkRequest->close();
+                                }
+                            } elseif ($isProfessor && !$row["ProfessorApproval"]) {
+                                ?>
                                 <form method="post">
                                     <input type="hidden" name="group_id" value="<?= $row['GroupId'] ?>">
-                                    <button type="submit" name="delete_group" class="btn btn-danger">Delete</button>
+                                    <button type="submit" name="approve_group" class="btn btn-success btn-sm">Approve</button>
                                 </form>
-                            <?php elseif ($isProfessor && !$row["ProfessorApproval"]): ?>
-                                <form method="post">
-                                    <input type="hidden" name="group_id" value="<?= $row['GroupId'] ?>">
-                                    <button type="submit" name="approve_group" class="btn btn-success">Approve</button>
-                                </form>
-                            <?php endif; ?>
+                                <?php
+                            }
+                            ?>
                         </td>
                     </tr>
                 <?php endwhile; ?>
             </tbody>
         </table>
+
+        <?php if ($isStudent && $leaderRequests->num_rows > 0): ?>
+            <h2 class="text-light mt-5">📥 Requests for My Groups</h2>
+            <table class="table table-dark table-bordered">
+                <thead>
+                    <tr>
+                        <th>Group Name</th>
+                        <th>Student Name</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($req = $leaderRequests->fetch_assoc()): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($req["GroupName"]) ?></td>
+                            <td><?= htmlspecialchars($req["FirstName"] . " " . $req["LastName"]) ?></td>
+                            <td>
+                                <?php if ($req["Status"] === "Pending"): ?>
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                <?php elseif ($req["Status"] === "Accepted"): ?>
+                                    <span class="badge bg-success">Accepted</span>
+                                <?php elseif ($req["Status"] === "Rejected"): ?>
+                                    <span class="badge bg-danger">Rejected</span>
+                                <?php endif; ?>
+                            </td>
+                            <td>
+                                <?php if ($req["Status"] === "Pending"): ?>
+                                    <form method="post" class="d-inline">
+                                        <input type="hidden" name="target_student_id" value="<?= $req["StudentId"] ?>">
+                                        <input type="hidden" name="target_group_id" value="<?= $req["GroupId"] ?>">
+                                        <input type="hidden" name="manage_request" value="1">
+                                        <button type="submit" name="action" value="Accepted" class="btn btn-success btn-sm">Accept</button>
+                                        <button type="submit" name="action" value="Rejected" class="btn btn-danger btn-sm">Reject</button>
+                                    </form>
+                                <?php elseif ($req["Status"] === "Accepted"): ?>
+                                    <span class="badge bg-success">You Have Accepted This Request</span>
+                                <?php elseif ($req["Status"] === "Rejected"): ?>
+                                    <span class="badge bg-danger">You Have Rejected This Request</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
 
         <?php if ($isStudent): ?>
             <h2 class="text-light mt-5">Create a Study Group</h2>
@@ -230,3 +328,4 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $is
 </html>
 
 <?php $conn->close(); ?>
+<?php ob_end_flush(); ?>

@@ -94,9 +94,9 @@ INSERT INTO STUDENT (FirstName, LastName, Email, Password, DepartmentId) VALUES
 
 -- Insert Study Groups
 INSERT INTO STUDY_GROUP (CourseId, LeaderStudentId, GroupName, GroupType, Schedule, ProfessorApproval) VALUES
-('CS101', 1, 'CS101 Study Group 1', 'Collaborative', '{"day": "Monday", "time": "14:00-16:00"}', TRUE), -- Alice leads, approved
-('CS101', 2, 'CS101 Study Group 2', 'Peer-led', '{"day": "Wednesday", "time": "10:00-12:00"}', FALSE), -- Bob leads, not approved
-('MATH201', 3, 'Calculus Study Group', 'Collaborative', '{"day": "Friday", "time": "13:00-15:00"}', TRUE); -- Charlie leads, approved
+('CS101', 1, 'CS101 Study Group 1', 'Collaborative', '[{"day": "Monday", "start": "14:00", "end": "16:00"}]', TRUE),
+('CS101', 2, 'CS101 Study Group 2', 'Peer-led', '[{"day": "Wednesday", "start": "10:00", "end": "12:00"}]', FALSE),
+('MATH201', 3, 'Calculus Study Group', 'Collaborative', '[{"day": "Friday", "start": "13:00", "end": "15:00"}]', TRUE);
 
 -- Insert Requests
 INSERT INTO REQUEST (StudentId, GroupId, Status) VALUES

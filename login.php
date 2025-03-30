@@ -1,14 +1,7 @@
 <?php
 session_start();
-$servername = "mysql";
-$username = "root";
-$password = "";
-$dbname = "study_group_matcher";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once "db.php"; // Call the db
+/** @var \mysqli $conn */ // Get the $conn global var
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST["email"]);
@@ -24,6 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_result($studentId, $hashed_password);
         $stmt->fetch();
 
+        // Store session header to determine if they are student
         if (password_verify($password, $hashed_password)) {
             $_SESSION["StudentId"] = $studentId;
             $_SESSION["UserType"] = "Student";

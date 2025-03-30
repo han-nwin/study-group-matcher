@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once "db.php";
 
 // Redirect logged-in users to home.php
 if (isset($_SESSION["StudentId"]) || isset($_SESSION["ProfessorId"])) {
