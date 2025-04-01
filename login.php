@@ -17,7 +17,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_result($studentId, $hashed_password);
         $stmt->fetch();
 
-        // Store session header to determine if they are student
+        // NOTE: Store session header to determine if they are student in other path
         if (password_verify($password, $hashed_password)) {
             $_SESSION["StudentId"] = $studentId;
             $_SESSION["UserType"] = "Student";
@@ -37,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_result($professorId, $hashed_password);
         $stmt->fetch();
 
+        // NOTE: Store session header to determine if they are professor in other path
         if (password_verify($password, $hashed_password)) {
             $_SESSION["ProfessorId"] = $professorId;
             $_SESSION["UserType"] = "Professor";
