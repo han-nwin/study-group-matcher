@@ -1,5 +1,7 @@
 <?php
+ob_start();
 session_start();
+include 'navbar.php';
 require_once "db.php"; // Call the db
 /** @var \mysqli $conn */ // Get the $conn global var
 
@@ -21,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $hashed_password)) {
             $_SESSION["StudentId"] = $studentId;
             $_SESSION["UserType"] = "Student";
-            header("Location: home.php");
+            header("Location: student_dashboard.php");
             exit();
         }
     }
@@ -41,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (password_verify($password, $hashed_password)) {
             $_SESSION["ProfessorId"] = $professorId;
             $_SESSION["UserType"] = "Professor";
-            header("Location: home.php");
+            header("Location: professor_dashboard.php");
             exit();
         }
     }
@@ -76,3 +78,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
+
+<?php ob_end_flush(); ?>

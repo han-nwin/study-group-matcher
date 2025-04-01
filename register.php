@@ -1,5 +1,7 @@
 <?php
+ob_start();
 session_start();
+include 'navbar.php';
 require_once "db.php"; // Call the db
 /** @var \mysqli $conn */ // Get the $conn global var
 
@@ -85,3 +87,5 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </body>
 </html>
+
+<?php ob_end_flush(); ?>

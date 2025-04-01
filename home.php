@@ -23,13 +23,13 @@ include 'navbar.php';
             <section id="dashboard" class="mt-5">
                 <div class="row mt-3">
                     <div class="col-md-4">
-                        <a href="groups.php" class="btn btn-primary w-100 mb-2">View Study Groups</a>
+                        <a href="study_group.php" class="btn btn-primary w-100 mb-2">View Study Groups</a>
                     </div>
                     <div class="col-md-4">
-                        <a href="create_group.php" class="btn btn-success w-100 mb-2">Create Study Group</a>
+                        <a href="student_dashboard.php" class="btn btn-success w-100 mb-2">View Dashboard</a>
                     </div>
                     <div class="col-md-4">
-                        <a href="join_group.php" class="btn btn-warning w-100">Join Study Group</a>
+                        <a href="student_profile.php" class="btn btn-warning w-100">View Profile</a>
                     </div>
                 </div>
             </section>
@@ -38,10 +38,10 @@ include 'navbar.php';
             <section id="dashboard" class="mt-5">
                 <div class="row mt-3">
                     <div class="col-md-6">
-                        <a href="approve_groups.php" class="btn btn-info w-100 mb-2">Approve Study Groups</a>
+                        <a href="professor_dashboard.php" class="btn btn-info w-100 mb-2">View Dashboard</a>
                     </div>
                     <div class="col-md-6">
-                        <a href="manage_students.php" class="btn btn-secondary w-100">Manage Students</a>
+                        <a href="study_group.php" class="btn btn-secondary w-100">View Study Groups</a>
                     </div>
                 </div>
             </section>

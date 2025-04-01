@@ -1,5 +1,7 @@
 <?php
+ob_start();
 session_start();
+include 'navbar.php';
 require_once "db.php";
 
 // Redirect logged-in users to home.php
@@ -9,9 +11,9 @@ if (isset($_SESSION["StudentId"]) || isset($_SESSION["ProfessorId"])) {
 }
 
 $servername = "mysql";
-$username = "root";  // Replace with your MySQL user
-$password = "";  // Replace with your MySQL password
-$dbname = "study_group_matcher"; // Updated database name
+$username = "root";  
+$password = "";  
+$dbname = "study_group_matcher";
 
 // Step 1: Connect to MySQL
 $conn = new mysqli($servername, $username, $password);
@@ -37,7 +39,16 @@ echo "Connected successfully to '$dbname'";
 
 // Close connection
 $conn->close();
+
+
+if (!isset($_SESSION["StudentId"]) && !isset($_SESSION["ProfessorId"])) {
+    header("Location: overview.php");
+    exit();
+}
+
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -54,3 +65,5 @@ $conn->close();
     </div>
 </body>
 </html>
+
+<?php ob_end_flush(); ?>
