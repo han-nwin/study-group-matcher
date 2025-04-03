@@ -6,27 +6,29 @@ The Study Group Matcher is a web application that allows students to form and jo
 ## Project Structure
 ```
 .
-ÃÄÄ Dockerfile
-ÃÄÄ MANUAL.md
-ÃÄÄ README.md
-ÃÄÄ admin/
-³   ÃÄÄ admin.php
-³   ÃÄÄ manage.php
-³   ÀÄÄ manual.php
-ÃÄÄ docker-compose.yml
-ÃÄÄ home.php
-ÃÄÄ index.php
-ÃÄÄ login.php
-ÃÄÄ logout.php
-ÃÄÄ mysql/
-³   ÀÄÄ init.sql
-ÃÄÄ overview.php
-ÃÄÄ professor_dashboard.php
-ÃÄÄ register.php
-ÃÄÄ script.js
-ÃÄÄ student_dashboard.php
-ÃÄÄ study_group.php
-ÀÄÄ test.php
+--- Dockerfile
+--- MANUAL.md
+--- README.md
+--- admin/
+    |
+³    -- admin.php
+³    -- manage.php
+³    -- manual.php
+--- docker-compose.yml
+--- home.php
+--- index.php
+--- login.php
+--- logout.php
+--- mysql/
+    |
+---  -- init.sql
+--- overview.php
+--- professor_dashboard.php
+--- register.php
+--- script.js
+--- student_dashboard.php
+--- study_group.php
+--- test.php
 ```
 
 ## Prerequisites
