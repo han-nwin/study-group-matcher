@@ -17,15 +17,15 @@ if (session_status() === PHP_SESSION_NONE) {
 
                 <?php if (isset($_SESSION["StudentId"])): ?>
                     <li class="nav-item"><a class="nav-link text-light" href="student_dashboard.php">Student Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="enroll_course.php">Enroll Course</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="course.php">Enroll Course</a></li>
                     <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
                     <li class="nav-item"><a class="nav-link text-light" href="student_profile.php">Student Profile</a></li>
 
                 <?php elseif (isset($_SESSION["ProfessorId"])): ?>
                     <li class="nav-item"><a class="nav-link text-light" href="professor_dashboard.php">Professor Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="professor_profile.php">Professor Profile</a></li>
-                    <li class="nav-item"><a class="nav-link text-light" href="enroll_course.php">Enroll Course</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="course.php">Manage Course</a></li>
                     <li class="nav-item"><a class="nav-link text-light" href="study_group.php">Study Groups</a></li>
+                    <li class="nav-item"><a class="nav-link text-light" href="professor_profile.php">Professor Profile</a></li>
 
                 <?php else: ?>
                     <li class="nav-item"><a class="nav-link text-light" href="login.php">Login</a></li>

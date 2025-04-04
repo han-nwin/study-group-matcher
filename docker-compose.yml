@@ -7,7 +7,7 @@ services:
     volumes:
       - .:/var/www/html
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - mysql
     environment:
@@ -29,7 +29,9 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql  # Auto-loads DB on first run
+      # - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql  # Auto-loads DB on first run
+      - ./mysql/create.sql:/docker-entrypoint-initdb.d/create.sql  # Schema first (c < l)
+      - ./mysql/load.sql:/docker-entrypoint-initdb.d/load.sql      # Data second (l > c)
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

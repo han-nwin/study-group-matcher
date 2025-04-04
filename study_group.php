@@ -55,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["request_group"]) && $
         $stmt = $conn->prepare("INSERT INTO REQUEST (StudentId, GroupId, Status) VALUES (?, ?, 'Pending')");
         $stmt->bind_param("ii", $studentId, $groupId);
         if ($stmt->execute()) {
-            header("Location: " . $_SERVER["PHP_SELF"]); // Refresh page to reflect the new request
+            header("Location: " . $_SERVER["PHP_SELF"]); // Refresh page
             exit();
         } else {
             echo "<script>alert('Failed to send join request');</script>";
@@ -64,22 +64,50 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["request_group"]) && $
     }
 }
 
-// Fetch study groups relevant to user
+// Fetch study groups with member count and leader name
 if ($isStudent) {
     $stmt = $conn->prepare("
-        SELECT sg.GroupId, sg.CourseId, sg.GroupName, sg.GroupType, sg.ProfessorApproval, sg.Schedule, c.Name AS CourseName, sg.LeaderStudentId
+        SELECT 
+            sg.GroupId, 
+            sg.CourseId, 
+            sg.GroupName, 
+            sg.GroupType, 
+            sg.ProfessorApproval, 
+            sg.Schedule, 
+            c.Name AS CourseName, 
+            sg.LeaderStudentId,
+            s.FirstName AS LeaderFirstName,
+            s.LastName AS LeaderLastName,
+            COUNT(CASE WHEN r.Status = 'Accepted' THEN 1 END) AS MemberCount
         FROM STUDY_GROUP sg
         JOIN COURSE c ON sg.CourseId = c.CourseID
         JOIN ENROLL e ON sg.CourseId = e.CourseId
+        LEFT JOIN STUDENT s ON sg.LeaderStudentId = s.StudentId
+        LEFT JOIN REQUEST r ON sg.GroupId = r.GroupId
         WHERE e.StudentId = ?
+        GROUP BY sg.GroupId, sg.CourseId, sg.GroupName, sg.GroupType, sg.ProfessorApproval, sg.Schedule, c.Name, sg.LeaderStudentId, s.FirstName, s.LastName
     ");
     $stmt->bind_param("i", $studentId);
 } elseif ($isProfessor) {
     $stmt = $conn->prepare("
-        SELECT sg.GroupId, sg.CourseId, sg.GroupName, sg.GroupType, sg.ProfessorApproval, sg.Schedule, c.Name AS CourseName
+        SELECT 
+            sg.GroupId, 
+            sg.CourseId, 
+            sg.GroupName, 
+            sg.GroupType, 
+            sg.ProfessorApproval, 
+            sg.Schedule, 
+            c.Name AS CourseName,
+            sg.LeaderStudentId,
+            s.FirstName AS LeaderFirstName,
+            s.LastName AS LeaderLastName,
+            COUNT(CASE WHEN r.Status = 'Accepted' THEN 1 END) AS MemberCount
         FROM STUDY_GROUP sg
         JOIN COURSE c ON sg.CourseId = c.CourseID
+        LEFT JOIN STUDENT s ON sg.LeaderStudentId = s.StudentId
+        LEFT JOIN REQUEST r ON sg.GroupId = r.GroupId
         WHERE c.ProfessorId = ?
+        GROUP BY sg.GroupId, sg.CourseId, sg.GroupName, sg.GroupType, sg.ProfessorApproval, sg.Schedule, c.Name, sg.LeaderStudentId, s.FirstName, s.LastName
     ");
     $stmt->bind_param("i", $professorId);
 }
@@ -129,7 +157,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_group"]) && $is
     $stmt->close();
 }
 
-//Fetch groups for leaders to manage
+// Fetch groups for leaders to manage
 $leaderRequests = [];
 if ($isStudent) {
     $stmt = $conn->prepare("
@@ -184,6 +212,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["manage_request"]) && 
                     <th>Group Name</th>
                     <th>Course</th>
                     <th>Type</th>
+                    <th>Leader</th>
+                    <th>Members</th>
                     <th>Professor Approval</th>
                     <th>Schedule</th>
                     <th>Action</th>
@@ -195,6 +225,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["manage_request"]) && 
                         <td><?= htmlspecialchars($row["GroupName"]) ?></td>
                         <td><?= htmlspecialchars($row["CourseName"]) ?></td>
                         <td><?= htmlspecialchars($row["GroupType"]) ?></td>
+                        <td><?= htmlspecialchars($row["LeaderFirstName"] . " " . $row["LeaderLastName"]) ?></td>
+                        <td><?= htmlspecialchars($row["MemberCount"] ?? 0) ?></td>
                         <td><?= $row["ProfessorApproval"] ? "Approved" : "Pending" ?></td>
                         <td>
                             <?php 
