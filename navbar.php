@@ -13,7 +13,6 @@ if (session_status() === PHP_SESSION_NONE) {
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link text-light" href="overview.php">Overview</a></li>
 
                 <?php if (isset($_SESSION["StudentId"])): ?>
                     <li class="nav-item"><a class="nav-link text-light" href="student_dashboard.php">Student Dashboard</a></li>
@@ -28,6 +27,7 @@ if (session_status() === PHP_SESSION_NONE) {
                     <li class="nav-item"><a class="nav-link text-light" href="professor_profile.php">Professor Profile</a></li>
 
                 <?php else: ?>
+                    <li class="nav-item"><a class="nav-link text-light" href="overview.php">Overview</a></li>
                     <li class="nav-item"><a class="nav-link text-light" href="login.php">Login</a></li>
                     <li class="nav-item"><a class="nav-link text-light" href="register.php">Register</a></li>
                 <?php endif; ?>

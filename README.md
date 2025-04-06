@@ -93,7 +93,7 @@ The Study Group Matcher is a web application that allows students to form and jo
 5. **Access the Application in Your Browser:**
    - Open your browser and visit:
      ```
-     http://localhost:8080/home.php
+     http://localhost:8080
      ```
    - You should see the study group matcher homepage.
 
