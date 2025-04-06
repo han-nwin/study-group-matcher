@@ -30,8 +30,9 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
       # - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql  # Auto-loads DB on first run
-      - ./mysql/create.sql:/docker-entrypoint-initdb.d/create.sql  # Schema first (c < l)
-      - ./mysql/load.sql:/docker-entrypoint-initdb.d/load.sql      # Data second (l > c)
+      # - ./mysql/create.sql:/docker-entrypoint-initdb.d/create.sql  # Schema first (c < l)
+      # - ./mysql/load.sql:/docker-entrypoint-initdb.d/load.sql      # Data second (l > c)
+      - ./mysql:/docker-entrypoint-initdb.d # Load the whole directory
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

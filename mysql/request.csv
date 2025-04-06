@@ -1,0 +1,8 @@
+StudentId,GroupId,Status
+2,1,Pending
+4,1,Accepted
+4,6,Pending
+7,1,Rejected
+5,4,Accepted
+6,5,Pending
+

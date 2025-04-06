@@ -1,0 +1,9 @@
+FirstName,LastName,Email,Password,DepartmentId
+Alice,Davis,alice.davis@university.edu,$2y$10$exampleHashForStud123abc,1
+Bob,Wilson,bob.wilson@university.edu,$2y$10$exampleHashForStud123def,1
+Charlie,Miller,charlie.miller@university.edu,$2y$10$exampleHashForStud123ghi,2
+Tan Han,Nguyen,txn200004@utdallas.edu,$2y$12$cLmg797CwTSbmg8qGXBPpODmbkLWLyS.x5LjM3dKBFhSnkmU2PT72,1
+Diana,Evans,diana.evans@university.edu,$2y$10$exampleHashForStud123jkl,4
+Eve,Taylor,eve.taylor@university.edu,$2y$10$exampleHashForStud123mno,5
+Frank,Harris,frank.harris@university.edu,$2y$10$exampleHashForStud123pqr,1
+

@@ -1,0 +1,8 @@
+FirstName,LastName,Email,Password,DepartmentId
+John,Smith,john.smith@university.edu,$2y$10$exampleHashForProf123abc,1
+Emily,Johnson,emily.johnson@university.edu,$2y$10$exampleHashForProf123def,2
+Michael,Brown,michael.brown@university.edu,$2y$10$exampleHashForProf123ghi,3
+Professor,Nguyen,professorNguyen@utdallas.edu,$2y$12$Ud2lhb4yRH912Y.kvSejhukqWg8YGcOhOcMBkEPID.DCR9b8soq1K,1
+Sarah,Lee,sarah.lee@university.edu,$2y$10$exampleHashForProf123jkl,4
+David,Clark,david.clark@university.edu,$2y$10$exampleHashForProf123mno,5
+

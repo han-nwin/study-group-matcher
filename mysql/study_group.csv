@@ -1,0 +1,8 @@
+CourseId,LeaderStudentId,GroupName,GroupType,Schedule,ProfessorApproval
+CS101,1,CS101 Study Group 1,Collaborative,"[{""day"": ""Monday"", ""start"": ""14:00"", ""end"": ""16:00""}]",1
+CS101,2,CS101 Study Group 2,Peer-led,"[{""day"": ""Wednesday"", ""start"": ""10:00"", ""end"": ""12:00""}]",0
+MATH201,3,Calculus Study Group,Collaborative,"[{""day"": ""Friday"", ""start"": ""13:00"", ""end"": ""15:00""}]",1
+BIO101,5,Biology Study Group,Peer-led,"[{""day"": ""Tuesday"", ""start"": ""15:00"", ""end"": ""17:00""}]",0
+ENG101,6,Lit Discussion Group,Collaborative,"[{""day"": ""Thursday"", ""start"": ""11:00"", ""end"": ""13:00""}]",1
+CS202,7,Data Structures Group,Study,"[{""day"": ""Monday"", ""start"": ""16:00"", ""end"": ""18:00""}]",0
+

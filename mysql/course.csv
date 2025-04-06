@@ -1,0 +1,12 @@
+CourseID,Name,DepartmentId,ProfessorId
+CS101,Introduction to Programming,1,1
+MATH201,Calculus I,2,2
+PHYS101,Physics I,3,3
+BIO101,Intro to Biology,4,5
+ENG101,English Literature,5,6
+CS202,Data Structures,1,4
+CS102,Programming Fundamental I,1,
+CS103,Programming Fundamental II,1,
+MATH202,Calculus II,2,
+PHYS102,Physics 2,3,
+
