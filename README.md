@@ -11,9 +11,9 @@ The Study Group Matcher is a web application that allows students to form and jo
 --- README.md
 --- admin/
     |
-|    -- admin.php
-|    -- manage.php
-|    -- manual.php
+    -- admin.php
+    -- manage.php
+    -- manual.php
 --- docker-compose.yml
 --- home.php
 --- index.php
