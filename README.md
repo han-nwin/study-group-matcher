@@ -11,9 +11,9 @@ The Study Group Matcher is a web application that allows students to form and jo
 --- README.md
 --- admin/
     |
-³    -- admin.php
-³    -- manage.php
-³    -- manual.php
+|    -- admin.php
+|    -- manage.php
+|    -- manual.php
 --- docker-compose.yml
 --- home.php
 --- index.php
@@ -21,7 +21,8 @@ The Study Group Matcher is a web application that allows students to form and jo
 --- logout.php
 --- mysql/
     |
----  -- init.sql
+    -- create.sql
+    -- load.sql
 --- overview.php
 --- professor_dashboard.php
 --- register.php
@@ -185,7 +186,7 @@ The Study Group Matcher is a web application that allows students to form and jo
   ```
 
 ## Sample Data
-The database (`study_group_matcher`) is initialized with sample data via `mysql/init.sql`:
+The database (`study_group_matcher`) is initialized with sample data via `mysql/create.sql` and `mysql/load.sql`:
 - **Departments:** Computer Science, Mathematics, Physics.
 - **Professors:** John Smith (CS), Emily Johnson (Math), Michael Brown (Physics), password: `prof123`.
 - **Courses:** CS101, MATH201, PHYS101.
